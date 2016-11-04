@@ -2,12 +2,13 @@ package com.melinkr.common.rpc;
 
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.melinkr.common.model.BaseEntity;
 import com.melinkr.common.model.PageModel;
 import com.melinkr.common.model.PageModelForDatatable;
 import com.melinkr.common.rpc.page.RpcPageInfo;
 import com.melinkr.common.rpc.page.RpcPageInfoForDatatable;
 import com.melinkr.common.service.IService;
-import com.melinkr.common.utils.PageInfoUtil;
+import com.melinkr.common.utils.DatatablesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -18,7 +19,7 @@ import java.util.List;
 /**
  * Created by miller on 2016/9/18.
  */
-public abstract class BaseRpcService<T, S extends IService<T>> implements IRpcService<T> {
+public abstract class BaseRpcService<T extends BaseEntity, S extends IService<T>> implements IRpcService<T> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected abstract S getService();
@@ -46,13 +47,23 @@ public abstract class BaseRpcService<T, S extends IService<T>> implements IRpcSe
     }
 
     @Override
+    public int deleteListByKey(String ids) {
+        return getService().deleteListByKey(ids);
+    }
+
+    @Override
     public int updateByKey(T entity) {
         return getService().updateByKeyNotNull(entity);
     }
 
     @Override
+    public int saveOrUpdateOneNotNull(T entity) {
+        return getService().saveOrUpdateNotNull(entity);
+    }
+
+    @Override
     public T selectByKey(Serializable key) {
-        return null;
+        return getService().selectByKey(key);
     }
 
     @Override
@@ -84,12 +95,18 @@ public abstract class BaseRpcService<T, S extends IService<T>> implements IRpcSe
     @Override
     public RpcPageInfoForDatatable<T> selectListWithPageForDatatable(T entity, PageModelForDatatable pageModel) {
         PageInfo<T> pageInfo = getService().selectListWithPageForDatatable(entity, pageModel);
-        return PageInfoUtil.toDatatablePage(pageInfo,pageModel);
+        return DatatablesUtil.toDatatablePage(pageInfo,pageModel);
+    }
+
+    @Override
+    public RpcPageInfoForDatatable<T> selectListWithPageForDatatable(PageModelForDatatable pageModel) {
+        PageInfo<T> pageInfo = getService().selectListWithPageForDatatable(pageModel);
+        return DatatablesUtil.toDatatablePage(pageInfo,pageModel);
     }
 
     @Override
     public RpcPageInfoForDatatable<T> selectAllWithPageForDatatable(PageModelForDatatable pageModel) {
         PageInfo<T> pageInfo = getService().selectAllWithPageForDatatable(pageModel);
-        return PageInfoUtil.toDatatablePage(pageInfo,pageModel);
+        return DatatablesUtil.toDatatablePage(pageInfo,pageModel);
     }
 }

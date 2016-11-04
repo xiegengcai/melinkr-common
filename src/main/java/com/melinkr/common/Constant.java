@@ -23,4 +23,30 @@ public interface Constant {
         , VALID     // 1 有效
         ;
     }
+
+    /**
+     * datatables Column
+     */
+    enum  Column {
+        data,
+        name,
+        searchable,
+        orderable,
+        searchValue,
+        searchRegex
+    }
+    /**
+     * datatables Search
+     */
+    enum Search{
+        value,
+        regex
+    }
+    /**
+     * datatables Order
+     */
+    enum Order {
+        column,
+        dir
+    }
 }

@@ -1,15 +1,14 @@
 package com.melinkr.common.poi.reader;
 
-import com.melinkr.common.poi.writer.IRowWriter;
 import com.melinkr.common.utils.ExcelUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.poi.ss.usermodel.Row;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -32,6 +31,11 @@ public class ExcelUtilTest {
             }
             System.out.println();
         };
+        try {
+            writeExcelTest();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -65,13 +69,32 @@ public class ExcelUtilTest {
         ExcelUtil.readExcel(rowReader, new FileInputStream(excel2007), excel2007);
     }
 
-    @Test
+//    @Test
     public void writeExcelTest() throws Exception {
         writeExcel(excel2003);
         writeExcel(excel2007);
     }
 
     private void writeExcel(String fileName) throws Exception {
+        Map<String, List<User>> sheetDateMap = getDataMap();
+
+        ExcelUtil.writeExcel(fileName, (row, user) -> {
+            int cellIndex = 0;
+            row.createCell(cellIndex++).setCellValue(user.getName());
+            row.createCell(cellIndex++).setCellValue(user.getAge());
+            row.createCell(cellIndex++).setCellValue(DateFormatUtils.format(user.getBirthDay(), DateFormatUtils.ISO_DATE_FORMAT.getPattern()));
+        }, getHeaders(), sheetDateMap);
+    }
+
+    private List<String> getHeaders() {
+        List<String> headers = new ArrayList<>();
+        headers.add("姓名");
+        headers.add("年龄");
+        headers.add("生日");
+        return headers;
+    }
+
+    private Map<String, List<User>> getDataMap() throws ParseException {
         Map<String, List<User>> sheetDateMap = new HashMap<>();
         List<User> sheet1 = new ArrayList<>();
         sheet1.add(new User("张三", 12, DateUtils.parseDate("1990-11-02", DateFormatUtils.ISO_DATE_FORMAT.getPattern())));
@@ -83,16 +106,18 @@ public class ExcelUtilTest {
         sheet2.add(new User("Andy", 11, DateUtils.parseDate("1990-09-12", DateFormatUtils.ISO_DATE_FORMAT.getPattern())));
         sheet2.add(new User("Jack", 13, DateUtils.parseDate("1990-12-12", DateFormatUtils.ISO_DATE_FORMAT.getPattern())));
         sheetDateMap.put("二班", sheet2);
-        List<String> headers = new ArrayList<>();
-        headers.add("姓名");
-        headers.add("年龄");
-        headers.add("生日");
-        ExcelUtil.writeExcel(fileName, (row, user) -> {
+        return sheetDateMap;
+    }
+
+    @Test
+    public void writeExcelByTemplateTest() throws Exception {
+        String tmp = "/tmp/tmp.xlsx";
+        ExcelUtil.writeExcelByTemplate(tmp, "/tmp/tmpdata.xlsx", (row, user) -> {
             int cellIndex = 0;
             row.createCell(cellIndex++).setCellValue(user.getName());
             row.createCell(cellIndex++).setCellValue(user.getAge());
             row.createCell(cellIndex++).setCellValue(DateFormatUtils.format(user.getBirthDay(), DateFormatUtils.ISO_DATE_FORMAT.getPattern()));
-        }, headers, sheetDateMap);
+        }, getDataMap());
     }
 
     class User {

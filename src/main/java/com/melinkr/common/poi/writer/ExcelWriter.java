@@ -5,12 +5,16 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.FileSystemUtils;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * 写Excel实现
  * Created by <a href="mailto:xiegengcai@gmail.com">Xie Gengcai</a> on 16-10-17.
  */
 public class ExcelWriter<T>  {
@@ -22,15 +26,13 @@ public class ExcelWriter<T>  {
     public ExcelWriter() {
     }
 
+    public ExcelWriter(IRowWriter<T> rowWriter, Map<String, List<T>> sheetDataMap, String fileName) {
+        this(rowWriter, null, sheetDataMap, fileName);
+    }
+
     public ExcelWriter(IRowWriter<T> rowWriter, List<String> headers, Map<String, List<T>> sheetDataMap, String fileName) {
         this.rowWriter = rowWriter;
         this.headers = headers;
-        this.sheetDataMap = sheetDataMap;
-        this.fileName = fileName;
-    }
-
-    public ExcelWriter(IRowWriter<T> rowWriter, Map<String, List<T>> sheetDataMap, String fileName) {
-        this.rowWriter = rowWriter;
         this.sheetDataMap = sheetDataMap;
         this.fileName = fileName;
     }
@@ -50,6 +52,7 @@ public class ExcelWriter<T>  {
     public void setRowWriter(IRowWriter<T> rowWriter) {
         this.rowWriter = rowWriter;
     }
+
 
     public void createSheet(Workbook workbook, String sheetName, List<T> sheetData) {
         Sheet sheet = workbook.createSheet(sheetName);
@@ -78,8 +81,10 @@ public class ExcelWriter<T>  {
             throw new  Exception("文件格式错误，fileName的扩展名只能是xls或xlsx。");
         }
 
-        for (Map.Entry<String, List<T>> entry:sheetDataMap.entrySet()) {
-            createSheet(workbook, entry.getKey(), entry.getValue());
+        if (sheetDataMap != null){
+            for (Map.Entry<String, List<T>> entry:sheetDataMap.entrySet()) {
+                createSheet(workbook, entry.getKey(), entry.getValue());
+            }
         }
         FileOutputStream fileOutputStream = new FileOutputStream(fileName);
         workbook.write(fileOutputStream);

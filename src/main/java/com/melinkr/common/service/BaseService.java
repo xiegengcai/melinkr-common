@@ -5,8 +5,11 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.melinkr.common.exception.CommonException;
 import com.melinkr.common.mapper.MelinkrMapper;
+import com.melinkr.common.model.BaseEntity;
 import com.melinkr.common.model.PageModel;
 import com.melinkr.common.model.PageModelForDatatable;
+import com.melinkr.common.model.ParamsForDatatable;
+import com.melinkr.common.utils.DatatablesUtil;
 
 import java.io.Serializable;
 import java.util.List;
@@ -14,7 +17,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:xiegengcai@gmail.com">Xie Gengcai</a> on 2016/9/8.
  */
-public abstract class BaseService<T, M extends MelinkrMapper<T>> implements IService<T> {
+public abstract class BaseService<T extends BaseEntity, M extends MelinkrMapper<T>> implements IService<T> {
 
     protected abstract M getMapper();
 
@@ -28,6 +31,14 @@ public abstract class BaseService<T, M extends MelinkrMapper<T>> implements ISer
     public int saveOneNotNull(T entity) {
         Preconditions.checkNotNull(entity, "传入实体不可为空");
         return getMapper().insertSelective(entity);
+    }
+
+    @Override
+    public int saveOrUpdateNotNull(T entity) {
+        if (entity.getId() != null) {
+            return getMapper().updateByPrimaryKeySelective(entity);
+        }
+        return saveOneNotNull(entity);
     }
 
     @Override
@@ -46,10 +57,23 @@ public abstract class BaseService<T, M extends MelinkrMapper<T>> implements ISer
         return getMapper().deleteByPrimaryKey(key);
     }
 
+
+
     @Override
     public int deleteList(T entity) {
         Preconditions.checkNotNull(entity, "传入实体不可为空");
         return getMapper().deleteList(entity);
+    }
+
+    @Override
+    public int deleteListByKey(String ids) {
+        String[] idArray = ids.split(",");
+        int rows = 0;
+        for (String id: idArray) {
+            rows++;
+            getMapper().deleteByPrimaryKey(Integer.parseInt(id));
+        }
+        return rows;
     }
 
     @Override
@@ -111,6 +135,13 @@ public abstract class BaseService<T, M extends MelinkrMapper<T>> implements ISer
         PageHelper.offsetPage(pageModel.getStart(), pageModel.getLength());
         return new PageInfo<>(getMapper().selectList(entity));
     }
+
+    @Override
+    public PageInfo selectListWithPageForDatatable(PageModelForDatatable pageModel){
+        ParamsForDatatable paramsForDatatable = DatatablesUtil.toParams(pageModel);
+        PageHelper.offsetPage(pageModel.getStart(), pageModel.getLength());
+        return new PageInfo<>(getMapper().selectDataTable(paramsForDatatable));
+    };
 
     @Override
     public PageInfo selectAllWithPageForDatatable(PageModelForDatatable pageModel) {

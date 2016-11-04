@@ -24,6 +24,15 @@ public class RpcPageInfo<T> implements Serializable {
     //总页数
     private int pages;
 
+    public RpcPageInfo() {
+    }
+
+    public RpcPageInfo(int pageNum, int pageSize, List<T> list) {
+        this.pageNum = pageNum;
+        this.pageSize = pageSize;
+        this.list = list;
+    }
+
     public int getPageNum() {
         return pageNum;
     }

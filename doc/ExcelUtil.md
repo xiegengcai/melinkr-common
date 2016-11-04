@@ -74,7 +74,13 @@
     // 2007
     ExcelUtil.writeExcel("/tmp/测试.xlsx", rowWriter, headers, sheetDateMap);
     ```
-
+1. 通过模板写Excel
+    ```java
+    // fileName方式
+    ExcelUtil.writeExcelByTemplate("模板文件.xlsx", "/tmp/结果文件.xls", rowWriter, sheetDateMap);
+    // File方式
+    ExcelUtil.writeExcelByTemplate(模板文件, "/tmp/结果文件.xls", rowWriter, sheetDateMap);
+    ```
 ### 读取Excel文件
 1. 实现IRowReader。该接口定义如何读取一行数据
     ```java

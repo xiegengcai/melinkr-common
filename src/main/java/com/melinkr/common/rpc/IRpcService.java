@@ -35,7 +35,12 @@ public interface IRpcService<T> {
      */
     int deleteByKey(Serializable ... keys);
 
-
+    /**
+     * 根据主键字段删除,传入的是string的ids
+     * @param ids
+     * @return
+     */
+    int deleteListByKey(String ids);
     /**
      * 根据主键更新属性
      * @param entity
@@ -43,6 +48,12 @@ public interface IRpcService<T> {
      */
     int updateByKey(T entity);
 
+    /**
+     * id为空时增加,id非空时修改
+     * @param entity
+     * @return
+     */
+    int saveOrUpdateOneNotNull(T entity);
     /**
      * 根据主键字段进行查询，方法参数必须包含完整的主键属性，查询条件使用等号
      * @param key
@@ -88,6 +99,13 @@ public interface IRpcService<T> {
      * @return
      */
     RpcPageInfoForDatatable<T> selectListWithPageForDatatable(T entity, PageModelForDatatable pageModel);
+
+    /**
+     * 根据条件模糊查询
+     * @param pageModel
+     * @return
+     */
+    RpcPageInfoForDatatable<T> selectListWithPageForDatatable(PageModelForDatatable pageModel);
 
     /**
      * 分页查询所有

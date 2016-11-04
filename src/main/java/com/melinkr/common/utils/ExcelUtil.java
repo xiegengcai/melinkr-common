@@ -9,7 +9,9 @@ import com.melinkr.common.poi.writer.ExcelWriter;
 import com.melinkr.common.poi.writer.IRowWriter;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -94,6 +96,48 @@ public class ExcelUtil {
      */
     public static <T> void writeExcel(String fileName, IRowWriter<T> rowWriter, Map<String, List<T>> sheetDataMap) throws Exception {
         new ExcelWriter<T>(rowWriter, sheetDataMap, fileName).process();
+    }
+
+    /**
+     * 通过模板写Excel
+     * @param srcFileName 模板源文件名
+     * @param fileName 最终保存文件名
+     * @param rowWriter
+     * @param sheetDataMap
+     * @param <T>
+     * @throws Exception
+     */
+    public static <T> void writeExcelByTemplate(String srcFileName, String fileName, IRowWriter<T> rowWriter, Map<String, List<T>> sheetDataMap) throws Exception {
+        List<String> header = buildHeader(new FileInputStream(srcFileName), srcFileName);
+        writeExcel(fileName, rowWriter, header, sheetDataMap);
+    }
+
+    /**
+     * 通过模板写Excel
+     * @param srcFile 模板源文件
+     * @param fileName 最终保存文件名
+     * @param rowWriter
+     * @param sheetDataMap
+     * @param <T>
+     * @throws Exception
+     */
+    public static <T> void writeExcelByTemplate(File srcFile, String fileName, IRowWriter<T> rowWriter, Map<String, List<T>> sheetDataMap) throws Exception {
+        List<String> header = buildHeader(new FileInputStream(srcFile), srcFile.getName());
+        writeExcel(fileName, rowWriter, header, sheetDataMap);
+    }
+
+    private static List<String> buildHeader(InputStream srcInputStream, String fileName) throws Exception {
+        List<String> header = new ArrayList<>();
+        IRowReader rowReader = (sheetIndex, curRow, rowlist) -> {
+            if (sheetIndex > 0 || curRow > 0) {
+                return;
+            }
+            for (int i = 0; i < rowlist.size(); i++) {
+                header.add(rowlist.get(i));
+            }
+        };
+        readExcel(rowReader, srcInputStream, fileName);
+        return header.size() > 0 ? header : null;
     }
 
 }

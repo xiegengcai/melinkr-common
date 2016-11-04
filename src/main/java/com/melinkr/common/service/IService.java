@@ -1,6 +1,7 @@
 package com.melinkr.common.service;
 
 import com.github.pagehelper.PageInfo;
+import com.melinkr.common.model.BaseEntity;
 import com.melinkr.common.model.PageModel;
 import com.melinkr.common.model.PageModelForDatatable;
 
@@ -27,6 +28,13 @@ public interface IService<T> {
     int saveOneNotNull(T entity);
 
     /**
+     * 保存或更新
+     * @param entity
+     * @return
+     */
+    int saveOrUpdateNotNull(T entity);
+
+    /**
      * 保存多个实体，存在一个限制是实体必须包含id属性并且为自增列
      * @param entitys
      * @return
@@ -47,6 +55,8 @@ public interface IService<T> {
      * @return
      */
     int deleteList(T entity);
+
+    int deleteListByKey(String ids);
 
     /**
      * 根据主键更新实体全部字段，null值会被更新
@@ -112,6 +122,13 @@ public interface IService<T> {
      * @return
      */
     PageInfo selectListWithPageForDatatable(T entity, PageModelForDatatable pageModel);
+
+    /**
+     * Datatables根据条件模糊查询
+     * @param pageModel
+     * @return
+     */
+    PageInfo selectListWithPageForDatatable(PageModelForDatatable pageModel);
 
     /**
      * Datatables根据条件分页查询分页查询所有

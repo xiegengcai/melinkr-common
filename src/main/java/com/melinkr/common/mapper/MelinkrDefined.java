@@ -1,5 +1,7 @@
 package com.melinkr.common.mapper;
 
+import com.melinkr.common.model.ParamsForDatatable;
+
 import java.util.List;
 
 /**
@@ -9,4 +11,5 @@ import java.util.List;
 public interface MelinkrDefined<T> {
     int deleteList(T entity);
     List<T> selectList(T entity);
+    List<T> selectDataTable(ParamsForDatatable paramsForDatatable);
 }
