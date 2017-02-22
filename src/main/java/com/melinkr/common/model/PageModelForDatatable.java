@@ -19,6 +19,7 @@ public class PageModelForDatatable implements Serializable{
     private Map<Constant.Search,String> search;//接收通用搜索条件
     private List<Map<Constant.Order,String>> order = new ArrayList<Map<Constant.Order,String>>();
     private List<Map<Constant.Column, String>> columns = new ArrayList<Map<Constant.Column, String>>();
+    private String advancedQuery;
 
 
     public int getDraw() {
@@ -67,5 +68,13 @@ public class PageModelForDatatable implements Serializable{
 
     public void setColumns(List<Map<Constant.Column, String>> columns) {
         this.columns = columns;
+    }
+
+    public String getAdvancedQuery() {
+        return advancedQuery;
+    }
+
+    public void setAdvancedQuery(String advancedQuery) {
+        this.advancedQuery = advancedQuery;
     }
 }

@@ -22,20 +22,16 @@ public class ExcelUtilTest {
 
     @Before
     public void init(){
-        excel2003 = "/tmp/2003.xls";
-        excel2007 = "/tmp/2007.xlsx";
+        excel2003 = "/home/xiegengcai/2003.xls";
+        excel2007 = "/home/xiegengcai/2007.xlsx";
         rowReader = (sheetIndex, curRow, rowlist) -> {
+            System.out.println(rowlist.size());
             System.out.print(curRow+" ");
             for (int i = 0; i < rowlist.size(); i++) {
-                System.out.print(rowlist.get(i) + " ");
+                System.out.print(" | "+rowlist.get(i) + "| ");
             }
             System.out.println();
         };
-        try {
-            writeExcelTest();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -69,7 +65,7 @@ public class ExcelUtilTest {
         ExcelUtil.readExcel(rowReader, new FileInputStream(excel2007), excel2007);
     }
 
-//    @Test
+    @Test
     public void writeExcelTest() throws Exception {
         writeExcel(excel2003);
         writeExcel(excel2007);
@@ -154,6 +150,17 @@ public class ExcelUtilTest {
         public void setBirthDay(Date birthDay) {
             this.birthDay = birthDay;
         }
+    }
+
+    @Test
+    public void readTerninal() throws Exception {
+        ExcelUtil.readExcel(new IRowReader() {
+            @Override
+            public void getRows(int sheetIndex, int curRow, List<String> rowlist) {
+                int cellIndex = 0;
+                System.out.println(sheetIndex+", " + curRow+ ", "+rowlist.get(cellIndex));
+            }
+        }, "/home/xiegengcai/Downloads/t.xlsx");
     }
 
 }

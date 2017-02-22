@@ -10,15 +10,13 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * <pre>
  *     参数摘要算法。
- * </pre>
  * <ol>
  *     <li>参数按key字符默认排序</li>
  *     <li>{@link #sign(Map, List, String)} 如有noSignParamNames，排除掉</li>
  *     <li>将上一步得到所有参数按key+value拼接起来</li>
  *     <li>将上一步的结果字符串首尾加盐 secret {@link #sign(Map, List, String)}</li>
- *     <li>只保留a-zA-Z0-9的字符来签名{@link #getSHA1Digest(String)}</li>
+ *     <li>只保留a-zA-Z0-9的字符来签名{@link MessageDigestUtils#getDigestHexStr(String, MessageDigestUtils.MessageDigestType)}</li>
  * </ol>
  * Created by <a href="mailto:xiegengcai@gmail.com">Xie Gengcai</a> on 2016/8/20.
  */
@@ -59,44 +57,11 @@ public class SignUtils {
                 buffer.append(paramName).append(params.get(paramName));
             }
             buffer.append(secret);
-            byte[] sha1Digest = getSHA1Digest(buffer.toString());
-            return byte2hex(sha1Digest);
+            return MessageDigestUtils.getDigestHexStr(buffer.toString(), MessageDigestUtils.MessageDigestType.SHA_1);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    /**
-     * 只留下a-zA-Z0-9的字符来签名，更方便兼容其他语言
-     * @param data
-     */
-    private static byte[] getSHA1Digest(String data) throws IOException {
-        data = Pattern.compile("[^a-zA-Z0-9]").matcher(data).replaceAll("");
-        byte[] bytes = null;
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            bytes = md.digest(data.getBytes("UTF-8"));
-        } catch (GeneralSecurityException gse) {
-            throw new IOException(gse);
-        }
-        return bytes;
-    }
-
-    /**
-     * 二进制转十六进制字符串
-     *
-     * @param bytes
-     */
-    private static String byte2hex(byte[] bytes) {
-        StringBuilder sign = new StringBuilder();
-        for (int i = 0; i < bytes.length; i++) {
-            String hex = Integer.toHexString(bytes[i] & 0xFF);
-            if (hex.length() == 1) {
-                sign.append("0");
-            }
-            sign.append(hex.toUpperCase());
-        }
-        return sign.toString();
-    }
 }

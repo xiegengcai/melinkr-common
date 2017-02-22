@@ -12,8 +12,8 @@ import java.lang.annotation.*;
 public @interface Loggable {
 
     /**
-     * 标记需要记录修改前后只的属性
+     * 操作类型
      * @return
      */
-    String [] keyAttributes();
+    int optType();
 }

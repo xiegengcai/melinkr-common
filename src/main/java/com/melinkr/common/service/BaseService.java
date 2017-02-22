@@ -3,22 +3,24 @@ package com.melinkr.common.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
-import com.melinkr.common.exception.CommonException;
 import com.melinkr.common.mapper.MelinkrMapper;
 import com.melinkr.common.model.BaseEntity;
 import com.melinkr.common.model.PageModel;
 import com.melinkr.common.model.PageModelForDatatable;
 import com.melinkr.common.model.ParamsForDatatable;
 import com.melinkr.common.utils.DatatablesUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by <a href="mailto:xiegengcai@gmail.com">Xie Gengcai</a> on 2016/9/8.
  */
 public abstract class BaseService<T extends BaseEntity, M extends MelinkrMapper<T>> implements IService<T> {
-
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected abstract M getMapper();
 
     @Override
@@ -90,9 +92,6 @@ public abstract class BaseService<T extends BaseEntity, M extends MelinkrMapper<
 
     @Override
     public T selectByKey(Serializable key) {
-        if(key==null){
-            throw new CommonException(100002,"主键为空");
-        }
         return getMapper().selectByPrimaryKey(key);
     }
 
@@ -149,7 +148,6 @@ public abstract class BaseService<T extends BaseEntity, M extends MelinkrMapper<
         PageHelper.offsetPage(pageModel.getStart(), pageModel.getLength());
         return new PageInfo<>(getMapper().selectAll());
     }
-
 
     //TODO 其他...
 }
